@@ -14,39 +14,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare
-        id: prep
-        run: |
-          DOCKER_IMAGE=betterweb/alpine
-          VERSION=latest
-          SHORTREF=${GITHUB_SHA::8}
-
-          TAGS="${DOCKER_IMAGE}:latest"
-
-          # Set output parameters.
-          echo ::set-output name=tags::${TAGS}
-          echo ::set-output name=docker_image::${DOCKER_IMAGE}
-
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: all
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@master
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
         run: echo $DOCKER_HUB_TOKEN > ~/.docker/config.json ; echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$DOCKER_HUB_TOKEN\"}}}" > ~/.docker/config.json
 
       - name: Build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
-          builder: ${{ steps.buildx.outputs.name }}
           context: .
           platforms: linux/amd64, linux/arm32v6, linux/arm32v7, linux/arm64v8, linux/i386, linux/ppc64le, linux/riscv64, linux/s390x
           push: true
-          tags: ${{ steps.prep.outputs.tags }}
+          tags: betterweb/alpine:latest
 
       - name: cleanup
         if: always()
