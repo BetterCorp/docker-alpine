@@ -1,6 +1,9 @@
 name: Build and Publish
 
 on:
+  schedule:
+    # At 04:00 on day-of-month 1 and 18.
+    - cron: '0 4 1,18 * *'
   push:
     branches:
       - "main"
