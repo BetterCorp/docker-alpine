@@ -40,13 +40,12 @@ jobs:
       - name: Set tags
         id: set-tags
         run: |
-          TAGS="${{ steps.parse-tags.outputs.output }}"
-          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+          echo "tags=${{ steps.parse-tags.outputs.output }}" >> "$GITHUB_OUTPUT"
 
       - name: Set matrix for build
         id: set-matrix
         run: |
-          TAGS=$(cat ${{ steps.set-tags.outputs.tags }} | grep tags | cut -d'=' -f2)
+          TAGS=$(echo "${{ steps.set-tags.outputs.tags }}" | grep tags | cut -d'=' -f2)
           MATRIX="{\"tag\": [${TAGS}]}"
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
           echo "MATRIX: ${MATRIX}"
