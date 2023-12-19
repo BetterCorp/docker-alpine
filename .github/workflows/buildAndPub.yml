@@ -29,7 +29,7 @@ jobs:
         with:
           compact: true
           input: docker_tags.json
-          script: ".results | map(.name)"
+          script: ".results | map(select((.name | contains(\".\")) and (.name | contains(\"-\") | not) and (.name | contains(\"_\") | not) or .name == \"latest\")) | map(.name)          "
 
       - name: Set matrix for build
         run: |
