@@ -40,9 +40,8 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          MATRIX="{\"tag\": $(echo '${{ steps.parse-tags.outputs.output }}'}"
-          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
-          echo "MATRIX: ${MATRIX}"
+          echo "matrix={"tag": $(echo ${{ steps.parse-tags.outputs.output }}}" >> "$GITHUB_OUTPUT"
+          echo "MATRIX: {"tag": $(echo ${{ steps.parse-tags.outputs.output }}}"
 
 
   build:
