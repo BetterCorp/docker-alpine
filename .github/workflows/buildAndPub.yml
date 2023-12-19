@@ -13,7 +13,7 @@ jobs:
   prepare-matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ fromJson(steps.set-matrix.outputs.matrix) }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -38,6 +38,7 @@ jobs:
           script: '.results | map(.name) | join(",")'
           
       - name: Set tags
+        id: set-tags
         run: |
           TAGS="${{ steps.parse-tags.outputs.result }}"
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
@@ -45,7 +46,7 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          TAGS=$(cat $GITHUB_OUTPUT | grep tags | cut -d'=' -f2)
+          TAGS=$(cat ${{ steps.set-tags.outputs.tags }} | grep tags | cut -d'=' -f2)
           MATRIX="{\"tag\": [${TAGS}]}"
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
 
