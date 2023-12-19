@@ -40,7 +40,7 @@ jobs:
       - name: Set tags
         id: set-tags
         run: |
-          TAGS="${{ steps.parse-tags.outputs.result }}"
+          TAGS="${{ steps.parse-tags.outputs.output }}"
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
 
       - name: Set matrix for build
