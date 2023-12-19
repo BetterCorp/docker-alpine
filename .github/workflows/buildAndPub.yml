@@ -43,7 +43,7 @@ jobs:
           TAGS=$(echo '${{ steps.parse-tags.outputs.output }}' | sed "s/\([\'\"]\)/\\\\\1/g")
           MATRIX="{\"tag\": ${TAGS}}"
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
-          echo "TAGS: ${{ steps.parse-tags.outputs.output }}"
+          echo "TAGS: ${TAGS}"
           echo "MATRIX: ${MATRIX}"
 
 
