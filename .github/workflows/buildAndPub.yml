@@ -3,7 +3,7 @@ name: Build and Publish
 on:
   schedule:
     # At 04:00 on day-of-month 1.
-    - cron: '0 4 1 * *'
+    - cron: "0 4 1 * *"
   workflow_dispatch:
   push:
     branches:
@@ -18,12 +18,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@master
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
       - name: Get Docker tags
         id: get-tags
         run: |
@@ -35,16 +29,21 @@ jobs:
         with:
           compact: true
           input: docker_tags.json
-          script: '.results | map(.name)'
-          
-      - name: Set matrix for build
-        id: set-matrix
-        run: |
-          echo '{"tag": ${{ steps.parse-tags.outputs.output }}}' >> test.json
-          cat test.json
-          echo "matrix={"tag": ${{ steps.parse-tags.outputs.output }}}" >> "$GITHUB_OUTPUT"
-          echo "MATRIX: {"tag": ${{ steps.parse-tags.outputs.output }}}"
+          script: ".results | map(.name)"
 
+      - name: Set matrix for build
+        run: |
+          echo '{"tag": ${{ steps.parse-tags.outputs.output }}}' >> config.json
+
+      - uses: cloudposse/github-action-jq@main
+        id: reparse-tags
+        with:
+          compact: true
+          input: config.json
+          script: "."
+
+      - run: echo 'matrix=${{ steps.reparse-tags.outputs.output }}' >> $GITHUB_OUTPUT
+        id: set-matrix
 
   build:
     needs: prepare-matrix
