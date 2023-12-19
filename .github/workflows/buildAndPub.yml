@@ -40,6 +40,8 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
+          echo '{"tag": ${{ steps.parse-tags.outputs.output }}}' >> test.json
+          cat test.json
           echo "matrix={"tag": ${{ steps.parse-tags.outputs.output }}}" >> "$GITHUB_OUTPUT"
           echo "MATRIX: {"tag": ${{ steps.parse-tags.outputs.output }}}"
 
