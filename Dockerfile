@@ -4,7 +4,7 @@ FROM alpine:${ALPINE_VERSION}
 
 RUN apk add --no-cache curl
 
-ENV GOSU_VERSION 3.19.0
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
   \
   apk add --no-cache --virtual .gosu-deps \
