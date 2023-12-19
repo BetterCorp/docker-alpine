@@ -15,7 +15,6 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: apt install jq -y
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -29,7 +28,18 @@ jobs:
         id: get-tags
         run: |
           IMAGE_NAME="library/alpine"
-          TAGS=$(curl -s "https://hub.docker.com/v2/repositories/${IMAGE_NAME}/tags?page_size=200" | jq -r '.results | map(.name) | join(",")')
+          curl -s "https://hub.docker.com/v2/repositories/${IMAGE_NAME}/tags?page_size=200" > docker_tags.json
+
+      - uses: cloudposse/github-action-jq@main
+        id: parse-tags
+        with:
+          compact: true
+          input: docker_tags.json
+          script: '.results | map(.name) | join(",")'
+          
+      - name: Set tags
+        run: |
+          TAGS="${{ steps.parse-tags.outputs.result }}"
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
 
       - name: Set matrix for build
@@ -38,6 +48,7 @@ jobs:
           TAGS=$(cat $GITHUB_OUTPUT | grep tags | cut -d'=' -f2)
           MATRIX="{\"tag\": [${TAGS}]}"
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+
 
   build:
     needs: prepare-matrix
