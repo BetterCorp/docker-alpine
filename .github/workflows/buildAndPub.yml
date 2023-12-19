@@ -35,19 +35,14 @@ jobs:
         with:
           compact: true
           input: docker_tags.json
-          script: '.results | map(.name) | join(",")'
+          script: '.results | map(.name)'
           
-      - name: Set tags
-        id: set-tags
-        run: |
-          echo "tags=${{ steps.parse-tags.outputs.output }}" >> "$GITHUB_OUTPUT"
-
       - name: Set matrix for build
         id: set-matrix
         run: |
-          TAGS=$(echo "${{ steps.set-tags.outputs.tags }}" | grep tags | cut -d'=' -f2)
-          MATRIX="{\"tag\": [${TAGS}]}"
+          MATRIX="{\"tag\": ${{ steps.parse-tags.outputs.output }}}"
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+          echo "TAGS: ${{ steps.parse-tags.outputs.output }}"
           echo "MATRIX: ${MATRIX}"
 
 
